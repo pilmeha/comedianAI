@@ -211,6 +211,7 @@ datasets/
 
 #models
 models/
+checkpoints/
 
 joke-gpt2/
 logs/
