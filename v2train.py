@@ -8,14 +8,15 @@ from tokenizers import Tokenizer
 import json
 from v2collate import collate_batch
 import os
+from tqdm import tqdm
 
 MAX_LENGTH = 128
-EPOCHS = 20
+EPOCHS = 10
 BATCH_SIZE = 64
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Подгружаем токенизатор
-tokenizer = Tokenizer.from_file("datasets\\v2joke-tokenizer.json")
+tokenizer = Tokenizer.from_file("datasets\\v3translated_filtered_more1_jokes.json")
 
 # Загружаем и токенизируем
 with open("datasets\\translated_filtered_more1_jokes.txt", "r", encoding="utf-8") as f:
@@ -42,6 +43,8 @@ for epoch in range(1, EPOCHS + 1):
     model.train()
     total_loss = 0
 
+    progress_bar = tqdm(train_loader, desc=f"Epoch {epoch}", leave=False)
+
     for input_ids, target_ids in train_loader:
         input_ids, target_ids = input_ids.to(DEVICE), target_ids.to(DEVICE)
         logits = model(input_ids)
@@ -52,6 +55,9 @@ for epoch in range(1, EPOCHS + 1):
         optimizer.zero_grad()
         total_loss += loss.item()
 
+        # отображаем текущий лосс в прогрессбаре
+        progress_bar.set_postfix(loss=loss.item())
+
     print(f"Epoch {epoch}: loss = {total_loss / len(train_loader):.4f}")
     os.makedirs("checkpoints", exist_ok=True)
-    torch.save(model.state_dict(), f"checkpoints/joke_gen_epoch{epoch}.pt")
+    torch.save(model.state_dict(), f"checkpoints/v3translated_filtered_more1_jokes{epoch}.pt")

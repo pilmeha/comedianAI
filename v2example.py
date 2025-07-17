@@ -46,12 +46,12 @@ def generate_joke(model, tokenizer, context, max_length=50, temperature=1.0, top
 
 
 if __name__ == "__main__":
-    tokenizer = Tokenizer.from_file("datasets\\v2joke-tokenizer.json")
+    tokenizer = Tokenizer.from_file("datasets\\v3translated_filtered_more1_jokes.json")
     print(tokenizer.token_to_id("<|joke|>"))
     print(tokenizer.token_to_id("<|endoftext|>"))
 
     model = JokeModel(vocab_size=tokenizer.get_vocab_size())
-    model.load_state_dict(torch.load("checkpoints/joke_gen_epoch20.pt", map_location=DEVICE))
+    model.load_state_dict(torch.load("checkpoints/v3translated_filtered_more1_jokes10.pt", map_location=DEVICE))
 
     context = input("Введите тему шутки: ").strip()
     joke = generate_joke(model, tokenizer, context)

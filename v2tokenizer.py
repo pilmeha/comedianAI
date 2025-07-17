@@ -1,7 +1,7 @@
 from tokenizers import Tokenizer, models, trainers, pre_tokenizers
 import os
 
-def train_tokenizer(joke_file, save_path="datasets\\v2joke-tokenizer.json"):
+def train_tokenizer(joke_file, save_path="datasets\\v3translated_filtered_more1_jokes.json"):
     tokenizer = Tokenizer(models.BPE())
     tokenizer.pre_tokenizer = pre_tokenizers.Whitespace()
 
