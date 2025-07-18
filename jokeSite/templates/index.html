@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Генератор шуток</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; background-color: #f2f2f2; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+        input[type="text"] { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 10px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .joke-box { margin-top: 20px; padding: 15px; background-color: #e6f7ff; border-left: 4px solid #1890ff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Генератор шуток</h1>
+    <form method="post">
+        <label for="context">Введите контекст:</label><br>
+        <input type="text" id="context" name="context" value="{{ context or '' }}" required>
+        <button type="submit">Сгенерировать</button>
+    </form>
+    {% if joke %}
+    <div class="joke-box">
+        <strong>Шутка:</strong> {{ joke }}
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
