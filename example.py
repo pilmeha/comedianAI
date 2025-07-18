@@ -4,7 +4,7 @@ import os
 
 
 # Загружаем обученную модель и токенизатор
-model_path = "trained-joke-distilgpt2_v3"  # путь к сохраненной модели
+model_path = "models\\trained-joke-distilgpt2_testV4"  # путь к сохраненной модели
 # model_path = "distilgpt2"  # путь к сохраненной модели
 
 # Проверка существования пути
@@ -28,11 +28,11 @@ def generate_joke(context: str) -> str:
     output = model.generate(
         input_ids = input_ids,
         attention_mask = attention_mask,
-        max_length=100,  # Максимальная длина выходного текста
+        max_length=128,  # Максимальная длина выходного текста
         num_return_sequences=1,  # Количество вариантов
         do_sample=True,  # Включаем случайную генерацию
         top_k=50,  # Ограничиваем выбор топ-50 слов
-        top_p=0.85,  # Nucleus sampling
+        top_p=0.9,  # Nucleus sampling
         temperature=0.7,  # "Творческость" модели
         pad_token_id=tokenizer.pad_token_id, 
         eos_token_id = tokenizer.eos_token_id,

@@ -42,7 +42,7 @@ async def generate(request: Request, context: str = Form(...)):
             # eos_token_id = tokenizer.eos_token_id,
             do_sample=True,
             top_k=50,
-            top_p=0.9,
+            top_p=0.85,
             temperature=0.7,
             num_return_sequences=1,
         )

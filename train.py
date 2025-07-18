@@ -1,7 +1,10 @@
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, DataCollatorForLanguageModeling
 from datasets import Dataset
 from transformers import Trainer, TrainingArguments
-import math
+import math, os
+
+# Попробуем настроить выделение памяти
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 # Загружаем токенизатор и модель
 tokenizer = GPT2Tokenizer.from_pretrained("distilgpt2")
@@ -30,7 +33,7 @@ def load_dataset_from_txt(file_path):
     
     return {"context": contexts, "joke": jokes}
 
-data = load_dataset_from_txt("translated_filtered_more1_jokes.txt")
+data = load_dataset_from_txt("datasets\\jokes_dataset_v4.txt")
 dataset = Dataset.from_dict(data)
 dataset = dataset.train_test_split(test_size=0.1)
 train_data = dataset["train"]
@@ -47,7 +50,9 @@ tokenized_val = val_data.map(tokenize_function, batched=True, remove_columns=["c
 
 
 def compute_metrics(eval_pred):
-    loss = eval_pred.loss
+    logits, labels = eval_pred
+    loss_fct = torch.nn.CrossEntropyLoss()
+    loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1)).item()
     return {
         "eval_loss": loss,
         "perplexity": math.exp(loss) if loss < 100 else float("inf"),
@@ -56,12 +61,12 @@ def compute_metrics(eval_pred):
 # Аргументы обучения
 training_args = TrainingArguments(
     dataloader_num_workers=2,
-    fp16=False,
+    fp16=True,
     output_dir="./joke-gpt2",
     overwrite_output_dir=True,
     num_train_epochs=10,
-    per_device_train_batch_size=2,
-    gradient_accumulation_steps=16,
+    per_device_train_batch_size=4,
+    gradient_accumulation_steps=8,
     save_steps=5000,
     save_total_limit=2,
     logging_steps=500,
@@ -85,11 +90,17 @@ if __name__ == '__main__':
     import torch
     print("💻 Используемое устройство:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU")
     trainer.train()
-    torch.cuda.empty_cache()
+    model.save_pretrained("trained-joke-distilgpt2_testV4")
+    tokenizer.save_pretrained("trained-joke-distilgpt2_testV4")
+
+
+    # torch.cuda.empty_cache()
+
+
 
     # Оценка модели на тестовой выборке
     # trainer.args.device = torch.device("cpu")
+    # Оценка на CPU
+    # trainer.model = trainer.model.to("cpu")
     # eval_results = trainer.evaluate()
     # print("Evaluation results:", eval_results)
-    model.save_pretrained("trained-joke-distilgpt2_v3")
-    tokenizer.save_pretrained("trained-joke-distilgpt2_v3")

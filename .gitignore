@@ -213,5 +213,7 @@ datasets/
 models/
 checkpoints/
 
-joke-gpt2/
+*joke-gpt2/
 logs/
+
+jokeSite/model/trained-joke-distilgpt2_testV4
